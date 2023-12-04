@@ -1,15 +1,37 @@
 import express from 'express';
 const app = express();
 
+import session from 'cookie-session';
+import passport from 'passport';
 
 //cors
 import cors from 'cors';
 const corsOptions = {
     origin : 'http://localhost:5173',
     methods : ['GET','POST','UPDATE','DELETE','PATCH'],
-    allowedHeaders : ['Content-Type','auth-token','Code']
+    credentials : true
+    // allowedHeaders : ['Content-Type','auth-token','Code','Credentials','credentials']
 };
 app.use(cors(corsOptions));
+
+app.use(session({
+    name: 'session',
+    keys:["lama"],
+    maxAge: 1*60*1000
+  }))
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.serializeUser(function(user,cb){
+    cb(null,user);
+  })
+  passport.deserializeUser(function(user,cb){
+    cb(null,user);
+  })
+
+
+
+
 
 app.use(express.json());
 
@@ -19,7 +41,6 @@ import { authLogin } from './Controllers/authController.js';
 
 app.use('/auth',Auth);
 app.use('/post',Post);
-app.get('/login',authLogin);
 
 
 app.listen(5000, (req,res,err) => {
